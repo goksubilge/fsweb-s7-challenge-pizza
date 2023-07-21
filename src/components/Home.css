@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow&family=Quattrocento&family=Satisfy&display=swap');
+
+.menu-text {
+    background-image: url(./../mvp-banner.png);
+    background-size:cover;
+    height: 100vh;
+    
+    display: flex;
+    flex-direction: column;
+  
+    align-items: center;
+    padding: 2rem;
+}
+.fonth {
+    font-family: 'Barlow', sans-serif;
+    font-size: 3rem;
+    color: #FAF7F2;
+    text-transform: uppercase;
+    display:flex;
+    flex-direction: column;
+    margin: 0rem;
+}
+
+
+.homepage-button {
+    width: 12rem;
+    height: 3rem;
+    border-radius: 20px;
+    background-color: #FDC913;
+    border: 10rem;
+    border-color: black;
+    
+    font-size: medium;
+    color: black;
+    text-decoration: none;
+    margin:1rem;
+}

@@ -1,0 +1,22 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow&family=Quattrocento&family=Satisfy&display=swap');
+
+.success {
+background-color: #CE2829;
+
+height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+
+
+font-family: 'Barlow', sans-serif;
+font-size: 3rem;
+color: #FAF7F2;
+}
+
+p {
+    margin:0;
+    padding: 1rem;
+}

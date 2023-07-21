@@ -1,0 +1,10 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow&family=Quattrocento&family=Satisfy&display=swap');
+
+.logo-container {
+    background-color: #CE2829;
+    display: flex;
+    padding: 2rem;
+    justify-content: center;
+
+}
