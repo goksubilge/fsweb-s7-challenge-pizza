@@ -7,9 +7,9 @@ const Success = () => {
     <div>
       <Header />
       <div className="success">
-        <p> TEBRİKLER ! </p>
+        <p className="fonts"> TEBRİKLER ! </p>
 
-        <p> SİPARİŞİNİZ ALINDI ! </p>
+        <p className="fonts"> SİPARİŞİNİZ ALINDI ! </p>
       </div>
     </div>
   );

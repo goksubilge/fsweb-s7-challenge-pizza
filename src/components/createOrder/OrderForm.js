@@ -13,9 +13,8 @@ import * as Yup from "yup";
 export default function OrderForm() {
   // sabit, sayfayla birlikte kayıtlı kalacak olan seçimler // checkboxes
 
-  const [extras, setExtras] = useState([
+  const [defextras, setDefExtras] = useState([
     "pepperoni",
-    "sosis",
     "mısır",
     "ananas",
     "jalepeno",
@@ -24,36 +23,95 @@ export default function OrderForm() {
   function extrasHandleChange(event) {
     let newExtras;
     const value = event.target.value;
-    if (extras.includes(value)) {
-      newExtras = extras.filter((extras) => extras !== value);
+    if (defextras.includes(value)) {
+      newExtras = defextras.filter((extras) => extras !== value);
       // extra içeriyor mu
     } else {
-      newExtras = [...extras, value];
+      newExtras = [...defextras, value];
       // extra içermiyorsa
     }
-    setExtras(newExtras);
+    setDefExtras(newExtras);
   }
   // console.log("array click control:",extras);
   //
   //
   //
+  // state for form-datas
+  const [formData, setFormData] = useState({
+    p_size: "",
+    p_thickness: "",
+    c_note: "",
+    c_adress: "",
+  });
   //
-  // isim & adres için yup kısmı
+  //
+  //
+  //
+  // boyut, kalınlık, note, adres için YUP kısmı
 
   const sema = Yup.object().shape({
-    name: Yup.string()
-      .required("adres ve isim gerekli")
-      .min(4, "en az 4 karakter olmalı"),
+    p_size: Yup.string().required("! seçim yapmalısınız"),
+    p_thickness: Yup.string().required("! seçim yapmalısınız"),
+    c_note: Yup.string().required("! ").min(4, "en az 1 karakter olmalı"),
+    c_adress: Yup.string()
+      .required("! adresinizi bilmezsem getiremem, illa ki yazacaksınız...")
+      .min(4, "en az 1 karakter olmalı"),
   });
-
-  const [formData, setFormData] = useState({ name: "" });
 
   // State for error messages
   const [errors, setErrors] = useState({
-    name: "",
+    p_size: "",
+    p_thickness: "",
+    c_note: "",
+    c_adress: "",
   });
 
-  function addressHandleChange(e) {
+  ///////FORM OBJECT LİSTENERS
+
+  const [PPrice, setPPrice] = useState(0);
+  const [thickness, setThickness] = useState(""); // incelik
+  const [PSize, setPSize] = useState("..."); // boyut
+  const [Pnmize, setPnmize] = useState("..."); //
+  const [note, setNote] = useState(""); // note
+  const [adres, setAdres] = useState(""); //adres
+
+  function requiredHandleChange(e) {
+    // Radio, Option, Note, Address Listener, ekstras yok henüz!!!
+    //
+    // P- Boyut
+    if (e.target.type === "radio") {
+      if (e.target.value === "small") {
+        setPPrice(200);
+        setPSize(4.0);
+        setPnmize(5);
+      }
+      if (e.target.value === "medium") {
+        setPPrice(250);
+        setPSize(4.5);
+        setPnmize(5);
+      }
+      if (e.target.value === "large") {
+        setPPrice(300);
+        setPSize(5.0);
+        setPnmize(5);
+      }
+    }
+    //
+    // P- Kalınlık
+    //
+    if (e.target.type === "option") {
+      setThickness(e.target.value);
+    }
+    //
+    // adres & note
+    //
+    if (e.target.type === "text") {
+      setAdres(e.target.value);
+    }
+    if (e.target.type === "textarea") {
+      setNote(e.target.value);
+    }
+
     Yup.reach(sema, e.target.name)
       .validate(e.target.value)
       .then((valid) => {
@@ -73,7 +131,7 @@ export default function OrderForm() {
   }
   // console.log(errors.name);
 
-  // sipariş ver validation
+  // sipariş ver button validation
 
   const [isFormValid, setFormValid] = useState(false);
 
@@ -81,7 +139,22 @@ export default function OrderForm() {
     sema.isValid(formData).then((valid) => {
       setFormValid(valid);
     });
-  }, [formData]);
+  }, [formData, sema]);
+
+  const PzCountHandlerChange = (e) => {
+    e.stopPropagation(); // stops event bubling
+    if (e.target.id === "decrease") {
+      PNumber > 0 && setPNumber(PNumber - 1);
+    } else {
+      PNumber < Pnmize && setPNumber(PNumber + 1);
+    }
+  };
+
+  const [PriceT, setPriceT] = useState(0); // son fiyat
+  const [PNumber, setPNumber] = useState(0);
+  useEffect(() => {
+    setPriceT(PPrice * PNumber + 5 * PNumber);
+  }, [PPrice, PNumber]);
 
   return (
     <div>
@@ -119,9 +192,9 @@ export default function OrderForm() {
             </div>
             <br />
             <div className="prd-count">
-              <h3>100 ₺</h3>
-              <p>4.9</p>
-              <p>(200)</p>
+              <h3>{PPrice} ₺</h3>
+              <p>{PSize}</p>
+              <p>({Pnmize}Adet)</p>
             </div>
             <br />
             <div className="prd-prg">
@@ -180,6 +253,7 @@ export default function OrderForm() {
                       Large
                     </label>
                     <br />
+                    {errors.p_size && <h6> {errors.name} </h6>}
                   </div>
                   <div className="p_weight">
                     <h4>
@@ -201,6 +275,7 @@ export default function OrderForm() {
                         Normal
                       </option>
                     </select>
+                    {errors.p_thickness && <h6> {errors.name} </h6>}
                   </div>
                 </div>
               </div>
@@ -210,7 +285,7 @@ export default function OrderForm() {
                 <div className="options-two">
                   <div>
                     <h4>Ek Malzemeler</h4>
-                    <p>
+                    <p className="prd-prg">
                       En fazla 10 malzeme seçebilirsiniz. Malzeme başına
                       eklenecek fiyat 5₺'dir.
                     </p>
@@ -221,7 +296,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="pepperoni"
                         name="extras"
-                        checked={extras.includes("pepperoni")}
+                        checked={defextras.includes("pepperoni")}
                         onChange={extrasHandleChange}
                       />
                       Pepperoni
@@ -231,7 +306,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="domates"
                         name="extras"
-                        checked={extras.includes("domates")}
+                        checked={defextras.includes("domates")}
                         onChange={extrasHandleChange}
                       />
                       Domates
@@ -241,7 +316,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="biber"
                         name="extras"
-                        checked={extras.includes("biber")}
+                        checked={defextras.includes("biber")}
                         onChange={extrasHandleChange}
                       />
                       Biber
@@ -251,7 +326,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="sosis"
                         name="extras"
-                        checked={extras.includes("sosis")}
+                        checked={defextras.includes("sosis")}
                         onChange={extrasHandleChange}
                       />
                       Sosis
@@ -261,7 +336,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="mısır"
                         name="extras"
-                        checked={extras.includes("mısır")}
+                        checked={defextras.includes("mısır")}
                         onChange={extrasHandleChange}
                       />
                       Mısır
@@ -271,7 +346,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="sucuk"
                         name="extras"
-                        checked={extras.includes("sucuk")}
+                        checked={defextras.includes("sucuk")}
                         onChange={extrasHandleChange}
                       />
                       Sucuk
@@ -281,7 +356,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="kanada jambonu"
                         name="extras"
-                        checked={extras.includes("kanada jambonu")}
+                        checked={defextras.includes("kanada jambonu")}
                         onChange={extrasHandleChange}
                       />
                       Kanada Jambonu
@@ -291,7 +366,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="salam"
                         name="extras"
-                        checked={extras.includes("salam")}
+                        checked={defextras.includes("salam")}
                         onChange={extrasHandleChange}
                       />
                       Salam
@@ -301,7 +376,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="ananas"
                         name="extras"
-                        checked={extras.includes("ananas")}
+                        checked={defextras.includes("ananas")}
                         onChange={extrasHandleChange}
                       />
                       Ananas
@@ -311,7 +386,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="tavuk ızgara"
                         name="extras"
-                        checked={extras.includes("tavuk ızgara")}
+                        checked={defextras.includes("tavuk ızgara")}
                         onChange={extrasHandleChange}
                       />
                       Tavuk Izgara
@@ -321,7 +396,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="jalepeno"
                         name="extras"
-                        checked={extras.includes("jalepeno")}
+                        checked={defextras.includes("jalepeno")}
                         onChange={extrasHandleChange}
                       />
                       Jalepeno
@@ -331,7 +406,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="kabak"
                         name="extras"
-                        checked={extras.includes("kabak")}
+                        checked={defextras.includes("kabak")}
                         onChange={extrasHandleChange}
                       />
                       Kabak
@@ -341,7 +416,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="soğan"
                         name="extras"
-                        checked={extras.includes("soğan")}
+                        checked={defextras.includes("soğan")}
                         onChange={extrasHandleChange}
                       />
                       Soğan
@@ -351,7 +426,7 @@ export default function OrderForm() {
                         type="checkbox"
                         value="sarımsak"
                         name="extras"
-                        checked={extras.includes("sarımsak")}
+                        checked={defextras.includes("sarımsak")}
                         onChange={extrasHandleChange}
                       />
                       Sarımsak
@@ -368,52 +443,77 @@ export default function OrderForm() {
                   <input
                     type="text"
                     id="text-inputs"
-                    onChange={addressHandleChange}
+                    onChange={requiredHandleChange}
                     value={formData.name}
                     placeholder="Siparişine eklemek istediğin bir not var mı?"
                   />
                 </label>
                 <br />
-                <span className="form-errors">{errors.name}</span>
+                <span className="form-errors">{errors.c_note}</span>
               </div>
 
               {/* ORDER BUTTON & SUMMARY: */}
 
-              <div className="form-ftrh-part">
+              <div className="form-thrht-part">
                 <label htmlFor="name-input" className="order-info">
                   <h4>İsim & Adres Bilgisi:</h4>
                 </label>
                 <textarea
-                  type="text"
+                  type="textarea"
                   id="text-inputs"
-                  onChange={addressHandleChange}
-                  //value={formData.name}
+                  onChange={requiredHandleChange}
+                  value={formData.name}
                   placeholder="please type your name and address"
                 ></textarea>
                 <br />
-                <span className="form-errors">{errors.name}</span>
+                <span className="form-errors">{errors.c_adress}</span>
                 <br />
-                <div>
-                  <h5>Sipariş Toplamı</h5>
+              </div>
+
+              <div className="form-fourt-part">
+                <div className="form-dec-inc">
+                  <button
+                    type="button"
+                    id="decrease"
+                    onClick={PzCountHandlerChange}
+                    disabled={PPrice === 0}
+                  >
+                    -
+                  </button>
+                  <h5 data-test-id="pNumber">{PNumber}</h5>
+                  <button
+                    type="button"
+                    id="increase"
+                    onClick={PzCountHandlerChange}
+                    disabled={PPrice === 0}
+                  >
+                    +
+                  </button>
+
                   <div>
+                    <h5>Sipariş Toplamı</h5>
                     <h6>Ekstra Seçimler</h6>
-                    <h6>15 .₺</h6>
-                  </div>
-                  <div>
-                    <h6>Toplam</h6>
-                    <h3>100 .₺</h3>
+                    <h6>15 ı ı burası .₺</h6>
                   </div>
                 </div>
-                <button
-                  type="submit"
-                  id="order-button"
-                  // şimdilik reset checkbox buttonu,değiştireceğim
-                  // onClick={() => setExtras([])}
-                  // bu buton adres ve isim bilgisi 4 karakterden büyükse aktif oluyor, şimdilik.
-                  disabled={!isFormValid}
-                >
-                  Sipariş ver
-                </button>
+
+                <div>
+                  <h6>Toplam</h6>
+                  <h3>{PriceT} .₺</h3>
+                </div>
+
+                <div>
+                  <button
+                    type="submit"
+                    id="order-button"
+                    // şimdilik reset checkbox buttonu,değiştireceğim
+                    // onClick={() => setExtras([])}
+                    // bu buton adres ve isim bilgisi 4 karakterden büyükse aktif oluyor, şimdilik.
+                    disabled={!isFormValid}
+                  >
+                    Sipariş ver
+                  </button>
+                </div>
               </div>
             </form>
           </div>

@@ -5,7 +5,7 @@ import Header from "./createOrder/Header";
 
 const Home = () => {
   return (
-    <div>
+    <div className="back-height">
       <Header />
       <div className="menu-text">
         <p className="fonth"> KOD ACIKTIRIR </p>

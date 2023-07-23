@@ -8,7 +8,7 @@ import Success from "./components/Success";
 const App = () => {
   return (
     <div>
-      <nav className="menu">
+      <nav>
         <Switch>
           <Route path="/" exact>
             <Home />

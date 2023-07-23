@@ -16,7 +16,8 @@ font-size: 3rem;
 color: #FAF7F2;
 }
 
-p {
+fonts {
     margin:0;
     padding: 1rem;
-}
+    color:#FAF7F2
+} 
